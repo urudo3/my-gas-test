@@ -50,7 +50,7 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           token: ${{ secrets.MY_PAT }}
-          repository-name: あなたのユーザー名/my-gas-assets
+          repository-name: urudo3/my-gas-assets
           branch: main
           folder: dist # 抽出したファイルが入っているフォルダだけを送る
           clean: false # 本番にある他のファイルを消さない設定
