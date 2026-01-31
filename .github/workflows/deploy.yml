@@ -16,52 +16,35 @@ permissions:
   id-token: write
 
 jobs:
-  # 1. テスト環境への自動公開
-  deploy-test:
-    if: github.event_name == 'push'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: '.'
-      - uses: actions/deploy-pages@v4
-
-  # 2. 本番環境への手動転送（バックアップ付き）
   deploy-production:
-    if: github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    environment:
-      name: production
-    steps:
-      - uses: actions/checkout@v4
-
-      # A. 指定されたファイルだけを抽出
-      - name: Filter and Collect Files
-        run: |
-          mkdir dist
-          IFS=',' read -ra ADDR <<< "${{ github.event.inputs.target_files }}"
-          for i in "${ADDR[@]}"; do
-            pattern=$(echo $i | xargs)
-            cp $pattern dist/ 2>/dev/null || echo "No files found for $pattern"
-          done
-
-      # B. 本番側の現在のmainを、日時を付けた名前でバックアップ作成
-      - name: Create Backup Branch
-        run: |
-          BACKUP_NAME="backup-$(date +'%Y%m%d-%H%M%S')"
-          git remote add target https://${{ secrets.MY_PAT }}@github.com/urudo3/my-gas-assets.git
-          git fetch target main
-          git push target target/main:refs/heads/$BACKUP_NAME
-        env:
-          MY_PAT: ${{ secrets.MY_PAT }}
-
-      # C. 本番のmainへ上書き
-      - name: Push to Production Repo
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          token: ${{ secrets.MY_PAT }}
-          repository-name: urudo3/my-gas-assets
-          branch: main
-          folder: dist
-          clean: false
+      if: github.event_name == 'workflow_dispatch'
+      runs-on: ubuntu-latest
+      environment:
+        name: production
+      steps:
+        - uses: actions/checkout@v4
+  
+        - name: Filter and Collect Files
+          run: |
+            mkdir dist
+            IFS=',' read -ra ADDR <<< "${{ github.event.inputs.target_files }}"
+            for i in "${ADDR[@]}"; do
+              pattern=$(echo $i | xargs)
+              cp $pattern dist/ 2>/dev/null || echo "No files found for $pattern"
+            done
+  
+        - name: Create Backup Branch
+          run: |
+            BACKUP_NAME="backup-$(date +'%Y%m%d-%H%M%S')"
+            git remote add target https://x-access-token:${{ secrets.MY_PAT }}@github.com/urudo3/my-gas-assets.git
+            git fetch target main
+            git push target target/main:refs/heads/$BACKUP_NAME
+  
+        - name: Push to Production Repo
+          uses: JamesIves/github-pages-deploy-action@v4
+          with:
+            token: ${{ secrets.MY_PAT }}
+            repository-name: urudo3/my-gas-assets
+            branch: main
+            folder: dist
+            clean: false
