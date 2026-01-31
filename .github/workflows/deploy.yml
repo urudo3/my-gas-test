@@ -1,8 +1,15 @@
-name: Test to Production Deploy
+name: Manual Deploy to Production
 
 on:
   push:
     branches: ["main"]
+  workflow_dispatch:
+    # ここで入力フォームを定義します
+    inputs:
+      target_files:
+        description: '転送するファイル/フォルダ（例: index.html または . ）'
+        required: true
+        default: '.' # 初期値は「すべて」に設定
 
 permissions:
   contents: write
@@ -11,29 +18,30 @@ permissions:
 
 jobs:
   deploy-test:
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Deploy to Test Pages
-        uses: actions/upload-pages-artifact@v3
+      - uses: actions/checkout@v4
+      - uses: actions/upload-pages-artifact@v3
         with:
           path: '.'
-      - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v4
+      - uses: actions/deploy-pages@v4
 
   deploy-production:
-    needs: deploy-test
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     environment:
       name: production
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
       - name: Push to Production Repo
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           token: ${{ secrets.MY_PAT }}
-          repository-name: urudo3/my-gas-assets
+          repository-name: あなたのユーザー名/my-gas-assets
           branch: main
+          # 入力フォームで指定したパスのみを転送対象にする
           folder: .
+          target-folder: .
+          # 特定ファイルのみに絞る場合は、このアクションの仕様に合わせ以下のように制御します
+          clean: false
