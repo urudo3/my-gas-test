@@ -1,0 +1,39 @@
+name: Test to Production Deploy
+
+on:
+  push:
+    branches: ["main"]
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  deploy-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Deploy to Test Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
+
+  deploy-production:
+    needs: deploy-test
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Push to Production Repo
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          token: ${{ secrets.MY_PAT }}
+          repository-name: urudo3/my-gas-assets
+          branch: main
+          folder: .
