@@ -891,7 +891,7 @@ function onError(error) {
 }
 function fetchFreshSongData() {
     // const API_URL = 'https://script.google.com/macros/s/AKfycby4dEto3Abr_bmC7nCMBjALGkxut24WTWtDoODMUWXWvx4W7TTNTqXCGQhxRT5QV8qqeA/exec';
-    const API_URL = 'data.json';
+    const API_URL = 'data.json?t=' + Date.now();
     fetch(API_URL)
         .then(response => {
             if (!response.ok) throw new Error('Network response was not ok');
