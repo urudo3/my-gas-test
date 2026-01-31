@@ -1,1 +1,297 @@
-<h1>３３３</h1>
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>朔栖まよ🍼🎷曲検索</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">データを読み込んでいます...</div>
+    </div>
+    <button id="scrollToTopBtn" class="scroll-to-top-btn" onclick="scrollToTop()" title="最上部へ戻る">▲</button>
+    <div class="container">
+        <div class="header-left">
+            <a href="https://www.youtube.com/@asaxmayo" id="ytLink" target="_blank" class="icon-link"
+                title="YouTubeチャンネルを開く">
+                <svg class="yt-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                </svg>
+            </a>
+        </div>
+        <div class="header-right">
+            <div class="burger-container">
+                <button id="burgerBtn" class="burger-btn" onclick="toggleMenu()" title="メニュー">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </button>
+                <div id="burgerMenu" class="burger-menu hidden">
+                    <a href="https://docs.google.com/spreadsheets/d/1lPv2iDZbVeVTyvMNHXIZMUfDFd7rDrebFVKBckSMoF4/edit?pli=1&gid=1677386991#gid=1677386991"
+                        target="_blank" class="menu-item" title="スプレッドシートを開く">
+                        <svg class="sheets-icon-small" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-8 14H7v-4h4v4zm0-6H7V7h4v4zm6 6h-4v-4h4v4zm0-6h-4V7h4v4z" />
+                        </svg>
+                        <span>参照元スプレッド</span>
+                    </a>
+                    <button onclick="forceRefresh()" class="menu-item refresh-item" title="データを強制更新">
+                        <svg class="refresh-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" />
+                        </svg>
+                        <span>最新データを取得</span>
+                    </button>
+                    <button onclick="showAboutPopup()" class="menu-item about-item" title="データについて">
+                        <svg class="info-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+                        </svg>
+                        <span>データについて</span>
+                    </button>
+                    <button id="reportBtn" onclick="toggleReportMode()" class="menu-item report-item" title="誤りを報告">
+                        <svg class="report-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" />
+                        </svg>
+                        <span>誤りを報告</span>
+                    </button>
+                </div>
+                <div id="menuOverlay" class="menu-overlay hidden" onclick="closeMenu()"></div>
+            </div>
+        </div>
+        <h1>
+            朔栖まよ🍼🎷曲検索
+        </h1>
+        <div class="tabs" style="position: relative;">
+            <div style="flex-grow:1; display:flex; justify-content:center;">
+                <button id="tab-btn-search" class="tab-btn active" onclick="switchTab('search')">検索</button>
+                <button id="tab-btn-list" class="tab-btn" onclick="switchTab('list')">全曲一覧</button>
+            </div>
+            <button id="settingsBtn" class="settings-icon-btn" onclick="showSettingsPopup()" title="設定">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor">
+                    <path
+                        d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z" />
+                </svg>
+            </button>
+        </div>
+        <div id="search-tab" class="tab-content hidden">
+            <div class="search-box">
+                <div class="input-group">
+                    <label for="searchQuery">検索キーワード</label>
+                    <div class="search-input-wrapper">
+                        <input type="text" id="searchQuery" placeholder="曲名、アーティスト、よみがなを入力">
+                        <button class="clear-btn" id="searchClear">×</button>
+                        <span class="result-count-inline" id="resultCountInline"></span>
+                    </div>
+                </div>
+                <div class="search-type">
+                    <label class="radio-label">
+                        <input type="radio" name="searchType" value="all" checked>
+                        <span>全て</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="searchType" value="song">
+                        <span>曲名</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="searchType" value="artist">
+                        <span>アーティスト</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="searchType" value="tieup">
+                        <span>タイアップ</span>
+                    </label>
+                </div>
+            </div>
+            <div id="searchResults" class="results"></div>
+            <div id="noSearchResults" class="hidden" style="text-align:center; color:#a0aec0; margin-top:20px;">
+                一致する曲が見つかりませんでした
+            </div>
+        </div>
+        <div id="list-tab" class="tab-content hidden">
+            <div class="list-filter">
+                <input type="text" id="listFilter" placeholder="一覧内を検索 ..."
+                    style="padding: 10px; width: 100%; border: 2px solid #e2e8f0; border-radius: 8px;">
+                <button class="clear-btn" id="filterClear">×</button>
+            </div>
+            <div class="list-controls"
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-top: 10px; margin-top: -10px;">
+                <div class="per-page-selector">
+                    <select id="itemsPerPage" onchange="changeItemsPerPage()"
+                        style="padding: 4px; border-radius: 4px; border: 1px solid #cbd5e0;">
+                        <option value="20">20件</option>
+                        <option value="50" selected>50件</option>
+                        <option value="100">100件</option>
+                        <option value="all">全て</option>
+                    </select>
+                </div>
+                <div id="listPaginationTop" class="pagination" style="margin-top: 0;"></div>
+            </div>
+            <div class="table-container">
+                <table id="songsTable">
+                    <thead>
+                        <tr>
+                            <th onclick="sortTable('曲名')">曲名 ↕</th>
+                            <th onclick="sortTable('アーティスト')">アーティスト ↕</th>
+                            <th onclick="sortTable('最終演奏')">最終演奏 ↕</th>
+                            <th onclick="sortTable('演奏回数')">回数 ↕</th>
+                        </tr>
+                    </thead>
+                    <tbody id="songListBody"></tbody>
+                </table>
+            </div>
+            <div id="listPaginationBottom" class="pagination"></div>
+        </div>
+    </div>
+    <div id="aboutPopup" class="popup-overlay hidden" onclick="closeAboutPopup(event)">
+        <div class="popup-modal" onclick="event.stopPropagation()">
+            <div class="popup-header">
+                <h2>データについて</h2>
+            </div>
+            <div class="popup-content">
+                <ul class="about-list">
+                    <li>曲名とアーティストのデータは、まよのーと(リスナーさん)のタイムスタンプ コメントをお借りしています。大感謝🙇</li>
+                    <li>AI を使用して 曲名やアーティストの整理、よみがな、タイアップ情報を取得しています。可能な限り目視で修正を行っていますが、誤った情報が含まれている可能性があります。ご了承ください</li>
+                </ul>
+            </div>
+            <div class="popup-footer">
+                <button class="popup-ok-btn" onclick="closeAboutPopup()">OK</button>
+            </div>
+        </div>
+    </div>
+    <div id="settingsPopup" class="popup-overlay hidden" onclick="closeSettingsPopup(event)">
+        <div class="popup-modal" onclick="event.stopPropagation()">
+            <div class="popup-header">
+                <h2>設定</h2>
+            </div>
+            <div class="popup-content">
+                <div class="settings-section">
+                    <h3>検索設定</h3>
+                    <div class="setting-item">
+                        <label for="settingSearchSort">デフォルトの表示順</label>
+                        <select id="settingSearchSort" class="setting-select">
+                            <option value="最終演奏">最終演奏</option>
+                            <option value="演奏回数">演奏回数</option>
+                            <option value="曲名">曲名</option>
+                            <option value="アーティスト">アーティスト</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <label for="settingSearchLimit">検索結果の表示件数</label>
+                        <select id="settingSearchLimit" class="setting-select" onchange="checkSearchLimitWarning()">
+                            <option value="20">20件</option>
+                            <option value="50">50件 (推奨)</option>
+                            <option value="100">100件</option>
+                            <option value="all">全て</option>
+                        </select>
+                        <div id="searchLimitWarning" class="setting-warning hidden">
+                            ※「全て」を選択すると、検索処理や表示が遅くなる可能性があります。
+                        </div>
+                    </div>
+                </div>
+                <div class="settings-section">
+                    <h3>全曲一覧設定</h3>
+                    <p class="setting-desc">表示する項目と順番を設定できます。</p>
+                    <div id="columnSettingsList" class="column-list">
+                    </div>
+                </div>
+            </div>
+            <div class="popup-footer" style="justify-content: space-between;">
+                <button class="popup-cancel-btn"
+                    style="background:none; border:1px solid #e2e8f0; color:#718096; margin-right:auto;"
+                    onclick="resetSettings()">初期設定に戻す</button>
+                <div style="display:flex; gap:10px;">
+                    <button class="popup-cancel-btn" onclick="closeSettingsPopup()">キャンセル</button>
+                    <button class="popup-submit-btn" onclick="saveSettings()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button id="floatingReportBtn" class="floating-report-btn hidden" onclick="reportSelectedSong()" title="選択した曲を報告"
+        disabled>
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" />
+        </svg>
+    </button>
+    <div id="reportPopup" class="popup-overlay hidden">
+        <div class="popup-modal" onclick="event.stopPropagation()">
+            <div class="popup-header">
+                <h2>誤りを報告</h2>
+            </div>
+            <div class="popup-content">
+                <form id="reportForm">
+                    <fieldset class="form-fieldset">
+                        <legend>修正内容を選択・入力してください</legend>
+                        <div class="form-report-row">
+                            <label class="form-report-checkbox">
+                                <input type="checkbox" name="reportSongName" onchange="toggleReportField(this)">
+                                <span>曲名</span>
+                            </label>
+                            <div class="form-report-values">
+                                <input type="text" id="reportNewSongName" class="form-input-report" placeholder="修正後の曲名"
+                                    disabled oninput="updateReportButtonDisabledState()">
+                            </div>
+                        </div>
+                        <div class="form-report-row">
+                            <label class="form-report-checkbox">
+                                <input type="checkbox" name="reportArtist" onchange="toggleReportField(this)">
+                                <span>アーティスト</span>
+                            </label>
+                            <div class="form-report-values">
+                                <input type="text" id="reportNewArtist" class="form-input-report"
+                                    placeholder="修正後のアーティスト" disabled oninput="updateReportButtonDisabledState()">
+                            </div>
+                        </div>
+                        <div class="form-report-row">
+                            <label class="form-report-checkbox">
+                                <input type="checkbox" name="reportSongYomi" onchange="toggleReportField(this)">
+                                <span>曲名のよみがな</span>
+                            </label>
+                            <div class="form-report-values">
+                                <input type="text" id="reportNewSongYomi" class="form-input-report"
+                                    placeholder="修正後のよみがな" disabled oninput="updateReportButtonDisabledState()">
+                            </div>
+                        </div>
+                        <div class="form-report-row">
+                            <label class="form-report-checkbox">
+                                <input type="checkbox" name="reportArtistYomi" onchange="toggleReportField(this)">
+                                <span>アーティストのよみがな</span>
+                            </label>
+                            <div class="form-report-values">
+                                <input type="text" id="reportNewArtistYomi" class="form-input-report"
+                                    placeholder="修正後のよみがな" disabled oninput="updateReportButtonDisabledState()">
+                            </div>
+                        </div>
+                        <div class="form-report-row">
+                            <label class="form-report-checkbox">
+                                <input type="checkbox" name="reportTieup" onchange="toggleReportField(this)">
+                                <span>タイアップ</span>
+                            </label>
+                            <div class="form-report-values">
+                                <input type="text" id="reportNewTieup" class="form-input-report" placeholder="修正後のタイアップ"
+                                    disabled oninput="updateReportButtonDisabledState()">
+                            </div>
+                        </div>
+                    </fieldset>
+                    <div class="form-row">
+                        <label class="form-label" for="reporterName">依頼者名（任意）</label>
+                        <input type="text" id="reporterName" class="form-input" placeholder="あなたのお名前">
+                    </div>
+                </form>
+            </div>
+            <div class="popup-footer">
+                <button class="popup-cancel-btn" onclick="closeReportPopup()">キャンセル</button>
+                <button class="popup-submit-btn" onclick="submitReport()">報告する</button>
+            </div>
+        </div>
+    </div>
+    <div class="copy-toast" id="copyToast">コピーしました!</div>
+    <script src="script.js"></script>
+</body>
+
+</html>
