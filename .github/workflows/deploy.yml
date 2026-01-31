@@ -4,12 +4,11 @@ on:
   push:
     branches: ["main"]
   workflow_dispatch:
-    # ここで入力フォームを定義します
     inputs:
       target_files:
-        description: '転送するファイル/フォルダ（例: index.html または . ）'
+        description: '転送対象（カンマ区切りで複数指定可）'
         required: true
-        default: '.' # 初期値は「すべて」に設定
+        default: '*.html, *.js, *.css' # ご希望の初期値
 
 permissions:
   contents: write
@@ -34,14 +33,24 @@ jobs:
       name: production
     steps:
       - uses: actions/checkout@v4
+
+      # 入力された拡張子に一致するファイルだけを一時フォルダに集める処理
+      - name: Filter and Collect Files
+        run: |
+          mkdir dist
+          # 入力された文字列（*.html, *.js, *.css）をカンマで分解してコピー
+          IFS=',' read -ra ADDR <<< "${{ github.event.inputs.target_files }}"
+          for i in "${ADDR[@]}"; do
+            # 空白を除去してからコピーを実行
+            pattern=$(echo $i | xargs)
+            cp $pattern dist/ 2>/dev/null || echo "No files found for $pattern"
+          done
+
       - name: Push to Production Repo
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           token: ${{ secrets.MY_PAT }}
           repository-name: あなたのユーザー名/my-gas-assets
           branch: main
-          # 入力フォームで指定したパスのみを転送対象にする
-          folder: .
-          target-folder: .
-          # 特定ファイルのみに絞る場合は、このアクションの仕様に合わせ以下のように制御します
-          clean: false
+          folder: dist # 抽出したファイルが入っているフォルダだけを送る
+          clean: false # 本番にある他のファイルを消さない設定
