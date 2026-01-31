@@ -1,5 +1,3 @@
-// ver 2.1
-
 var allSongs = [];
 var filteredListSongs = [];
 var searchTimeout = null;
@@ -899,6 +897,10 @@ function fetchFreshSongData() {
             if (!response.ok) throw new Error('Network response was not ok');
             return response.json();
         })
-        .then(data => onDataLoaded(data, false))
+        .then(responseData => {
+            // 新しい形式（createdAt + data）と旧形式（配列）の両方に対応
+            const songData = Array.isArray(responseData) ? responseData : responseData.data || [];
+            onDataLoaded(songData, false);
+        })
         .catch(error => onError(error));
 }
