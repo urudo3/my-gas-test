@@ -848,22 +848,8 @@ window.onload = function () {
             }
         })
         .catch(error => console.error('ライブ配信URL取得エラー:', error));
-    const cachedData = localStorage.getItem('songData');
-    const lastFetchTime = localStorage.getItem('lastFetchTime');
-    const now = Date.now();
-    const oneHour = 60 * 60 * 1000;
-    if (cachedData && lastFetchTime && (now - parseInt(lastFetchTime) < oneHour)) {
-        console.log('Using cached data');
-        try {
-            onDataLoaded(JSON.parse(cachedData), true);
-        } catch (e) {
-            console.error('Cache parse error', e);
-            fetchFreshSongData();
-        }
-    } else {
-        console.log('Fetching fresh data');
-        fetchFreshSongData();
-    }
+    console.log('Fetching fresh data');
+    fetchFreshSongData();
 };
 function switchTab(tabName) {
     document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -879,12 +865,6 @@ function switchTab(tabName) {
     updateReportButtonState();
 }
 function onDataLoaded(data, isCached) {
-    if (!isCached) {
-        try {
-            localStorage.setItem('songData', JSON.stringify(data));
-            localStorage.setItem('lastFetchTime', Date.now().toString());
-        } catch (e) { console.error('Storage error', e); }
-    }
     allSongs = data;
     filteredListSongs = [...allSongs];
     document.getElementById('loadingOverlay').classList.add('hidden');
