@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       target_files:
-        description: '転送対象（カンマ区切りで複数指定可）'
+        description: '⚠️【本番適用します】転送対象（カンマ区切りで複数指定可）'
         required: true
         default: '*.html, *.js, *.css'
 
@@ -16,15 +16,6 @@ permissions:
   id-token: write
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: 画面に通知を表示する
-        run: |
-          echo "::notice title=通知::これは通知メッセージです。画面上で少し目立ちます。"
-          echo "::warning title=警告::これは警告です。黄色い枠で強調されます。"
-          echo "::error title=エラーが発生::これはエラーです。赤い枠で表示され、一目でわかります。"
-          
   deploy-production:
       if: github.event_name == 'workflow_dispatch'
       runs-on: ubuntu-latest
