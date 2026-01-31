@@ -36,7 +36,9 @@ jobs:
         - name: Create Backup Branch
           run: |
             BACKUP_NAME="backup-$(date +'%Y%m%d-%H%M%S')"
-            git remote add target https://x-access-token:${{ secrets.MY_PAT }}@github.com/urudo3/my-gas-assets.git
+            # 認証情報を git に直接覚えさせ、標準の GITHUB_TOKEN を無効化します
+            git config --global url."https://x-access-token:${{ secrets.MY_PAT }}@github.com/".insteadOf "https://github.com/"
+            git remote add target https://github.com/urudo3/my-gas-assets.git
             git fetch target main
             git push target target/main:refs/heads/$BACKUP_NAME
   
