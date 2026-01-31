@@ -17,36 +17,45 @@ permissions:
 
 jobs:
   deploy-production:
-      if: github.event_name == 'workflow_dispatch'
-      runs-on: ubuntu-latest
-      environment:
-        name: production
-      steps:
-        - uses: actions/checkout@v4
-  
-        - name: Filter and Collect Files
-          run: |
-            mkdir dist
-            IFS=',' read -ra ADDR <<< "${{ github.event.inputs.target_files }}"
-            for i in "${ADDR[@]}"; do
-              pattern=$(echo $i | xargs)
-              cp $pattern dist/ 2>/dev/null || echo "No files found for $pattern"
-            done
-  
-        - name: Create Backup Branch
-          run: |
-            BACKUP_NAME="backup-$(date +'%Y%m%d-%H%M%S')"
-            # 認証情報を git に直接覚えさせ、標準の GITHUB_TOKEN を無効化します
-            git config --global url."https://x-access-token:${{ secrets.MY_PAT }}@github.com/".insteadOf "https://github.com/"
-            git remote add target https://github.com/urudo3/my-gas-assets.git
-            git fetch target main
-            git push target target/main:refs/heads/$BACKUP_NAME
-  
-        - name: Push to Production Repo
-          uses: JamesIves/github-pages-deploy-action@v4
-          with:
-            token: ${{ secrets.MY_PAT }}
-            repository-name: urudo3/my-gas-assets
-            branch: main
-            folder: dist
-            clean: false
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # 標準の認証情報を保存させない
+          persist-credentials: false
+
+      - name: Filter and Collect Files
+        run: |
+          mkdir dist
+          IFS=',' read -ra ADDR <<< "${{ github.event.inputs.target_files }}"
+          for i in "${ADDR[@]}"; do
+            pattern=$(echo $i | xargs)
+            cp $pattern dist/ 2>/dev/null || echo "No files found for $pattern"
+          done
+
+      - name: Create Backup Branch
+        run: |
+          # 1. 既存の(弱い)認証ヘッダーを強制的にクリアする
+          git config --local --unset-all http.https://github.com/.extraheader || true
+          
+          # 2. PATを使用してリモートを追加
+          BACKUP_NAME="backup-$(date +'%Y%m%d-%H%M%S')"
+          git remote add target https://x-access-token:${{ secrets.MY_PAT }}@github.com/urudo3/my-gas-assets.git
+          
+          # 3. 取得と送信
+          git fetch target main
+          git push target target/main:refs/heads/$BACKUP_NAME
+        env:
+          MY_PAT: ${{ secrets.MY_PAT }}
+
+      - name: Push to Production Repo
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          token: ${{ secrets.MY_PAT }}
+          repository-name: urudo3/my-gas-assets
+          branch: main
+          folder: dist
+          clean: false
