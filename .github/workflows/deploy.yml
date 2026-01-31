@@ -1,4 +1,4 @@
-name: Manual Deploy to Production
+name: 本番プッシュ
 
 on:
   push:
