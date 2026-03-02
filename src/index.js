@@ -12,7 +12,9 @@ export default {
 
     try {
       // 既存のテーブル名に合わせて SQL を書き換えてください
-      const { results } = await env.DB.prepare("/tables").all();
+      const { results } = await env.DB.prepare(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE '_cf_%'"
+      ).all();
       
       return new Response(JSON.stringify(results), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
