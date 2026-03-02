@@ -1,8 +1,8 @@
-name: my-d1-api
+name = "loan-memo-api" # 自由に変えてOK
 main = "src/index.js"
 compatibility_date = "2026-03-03"
 
 [[d1_databases]]
-binding = "DB"
-database_name = "あなたの既存DB名"
-database_id = "あなたの既存DBのID"
+binding = "DB" 
+database_name = "yt_data" 
+database_id = "fbce3881-d0b1-4edd-a31b-47be43345456" # ファイル内にあったID
