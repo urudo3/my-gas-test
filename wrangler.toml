@@ -1,8 +1,8 @@
-name = "loan-memo-api" # 自由に変えてOK
+name = "loan-memo-api"
 main = "src/index.js"
-compatibility_date = "2026-03-03"
+compatibility_date = "2024-04-01"
 
 [[d1_databases]]
-binding = "DB" 
-database_name = "yt_data" 
-database_id = "fbce3881-d0b1-4edd-a31b-47be43345456" # ファイル内にあったID
+binding = "DB"
+database_name = "yt_data"
+database_id = "fbce3881-d0b1-4edd-a31b-47be43345456"
