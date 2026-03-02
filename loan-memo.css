@@ -428,6 +428,12 @@ input:focus {
   }
 }
 
+.spinner-sm {
+  width: 24px;
+  height: 24px;
+  border-width: 3px;
+}
+
 /* モーダル */
 .modal {
   position: fixed;

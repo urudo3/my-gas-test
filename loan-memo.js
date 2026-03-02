@@ -111,11 +111,15 @@ async function loadSummary() {
 }
 
 async function loadUnpaidSuggest() {
+    const box = document.getElementById('suggest_list');
+    box.innerHTML = '<div class="spinner spinner-sm" style="margin:20px auto;"></div>';
     try {
         const data = await ScriptRunner.call("getUnpaid");
         unpaidItems = data || [];
         renderSuggest();
-    } catch (e) { }
+    } catch (e) {
+        box.innerHTML = '<div style="padding:20px; text-align:center; color:var(--danger);">読み込みエラー</div>';
+    }
 }
 
 function renderSuggest() {
