@@ -1,0 +1,8 @@
+name: my-d1-api
+main = "src/index.js"
+compatibility_date = "2026-03-03"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "あなたの既存DB名"
+database_id = "あなたの既存DBのID"
