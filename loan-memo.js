@@ -241,10 +241,19 @@ function resetForm() {
 
 async function loadUnpaid() {
     const list = document.getElementById('list_unpaid');
+    const totalEl = document.getElementById('unpaid_total');
     list.innerHTML = '<div class="spinner" style="margin:20px auto;"></div>';
+    totalEl.textContent = '';
     try {
-        const data = await ScriptRunner.call("getUnpaid");
+        const [data, summary] = await Promise.all([
+            ScriptRunner.call("getUnpaid"),
+            ScriptRunner.call("getSummary")
+        ]);
         list.innerHTML = data.length ? '' : '<div style="text-align:center; padding:40px; color:var(--text-sub);">未完済の項目はありません</div>';
+
+        // 未回収残高を表示（入力タブと同じ値）
+        totalEl.textContent = '未回収残高 ' + summary.balance.toLocaleString() + '円';
+
         data.forEach(item => {
             const acc = document.createElement('div');
             acc.className = 'acc-item';

@@ -74,7 +74,10 @@
 
             <!-- 2: 未完済 -->
             <div class="page">
-                <h3 style="margin-top:0;">未完済リスト</h3>
+                <div style="display:flex; align-items:baseline; justify-content:space-between; margin-top:0; margin-bottom:16px;">
+                    <h3 style="margin:0;">未完済リスト</h3>
+                    <span id="unpaid_total" style="font-size:14px; font-weight:600; color:var(--danger);"></span>
+                </div>
                 <div id="list_unpaid"></div>
             </div>
 
